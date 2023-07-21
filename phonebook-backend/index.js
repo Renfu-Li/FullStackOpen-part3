@@ -1,6 +1,11 @@
 import express from "express";
+import morgan from "morgan";
+import cors from "cors";
 
 const app = express();
+app.use(express.static("build"));
+app.use(cors());
+app.use(express.json());
 
 let persons = [
   {
@@ -25,7 +30,45 @@ let persons = [
   },
 ];
 
-app.use(express.json());
+const requestLogger = (req, res, next) => {
+  console.log("Method: ", req.method);
+  console.log("Path: ", req.path);
+  console.log("Body: ", req.body);
+  console.log("---");
+  next();
+};
+
+// app.use(requestLogger);
+
+app.use(morgan("tiny"));
+
+// solution1: using format string of predefined tokens
+morgan.token("body", function (req, res) {
+  const body = JSON.stringify(req.body);
+
+  return body;
+});
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
+
+// solution2: using a custom format function
+// app.use(
+//   morgan(function (tokens, req, res) {
+//     const resBody = JSON.stringify(req.body);
+//     return [
+//       tokens.method(req, res),
+//       tokens.url(req, res),
+//       tokens.status(req, res),
+//       tokens.res(req, res, "content-length"),
+//       "-",
+//       tokens["response-time"](req, res),
+//       "ms",
+//       resBody,
+//     ].join(" ");
+//   })
+// );
 
 app.get("/api/persons", (req, res) => {
   res.send(persons);
@@ -65,8 +108,6 @@ app.post("/api/persons", (req, res) => {
   persons.push(newContact);
 
   res.status(201).json(newContact);
-
-  console.log(newContact);
 });
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -92,7 +133,13 @@ app.get("/api/info", (req, res) => {
   );
 });
 
-const PORT = 3001;
+const unknownEndpoint = (req, res, next) => {
+  res.status(404).json({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
+
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);

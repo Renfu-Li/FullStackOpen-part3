@@ -23,3 +23,6 @@ Content-Type: application/json
   "name": "Arto Hellas",
   "number": "44444444"
 }
+
+###
+GET https://phonebook4fullstack.fly.dev/api/persons
