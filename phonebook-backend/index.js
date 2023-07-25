@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 
 // solution1: using format string of predefined tokens
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req) {
   const body = JSON.stringify(req.body);
 
   return body;
@@ -49,7 +49,9 @@ app.use(
 // );
 
 app.get("/api/persons", (req, res, next) => {
-  Person.find({}).then((returnedPersons) => res.json(returnedPersons));
+  Person.find({})
+    .then((returnedPersons) => res.json(returnedPersons))
+    .catch((err) => next(err));
 });
 
 app.get("/api/persons/:id", (req, res, next) => {
@@ -98,7 +100,7 @@ app.get("/api/info", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-const unknownEndpoint = (req, res, next) => {
+const unknownEndpoint = (req, res) => {
   res.status(404).json({ error: "unknown endpoint" });
 };
 

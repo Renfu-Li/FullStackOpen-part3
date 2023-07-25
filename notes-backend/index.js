@@ -34,7 +34,7 @@ app.post("/api/notes", (req, res, next) => {
 });
 
 app.get("/api/notes/:id", (req, res, next) => {
-  const note = Note.findById(req.params.id)
+  Note.findById(req.params.id)
     .then((note) => {
       if (note) {
         res.json(note);
@@ -45,7 +45,7 @@ app.get("/api/notes/:id", (req, res, next) => {
     .catch((error) => next(error));
 });
 
-app.put("/api/notes/:id", (req, res) => {
+app.put("/api/notes/:id", (req, res, next) => {
   const documentId = req.params.id;
   const { content, important } = req.body;
 
@@ -62,11 +62,11 @@ app.put("/api/notes/:id", (req, res) => {
     .catch((error) => next(error));
 });
 
-app.delete("/api/notes/:id", (req, res) => {
+app.delete("/api/notes/:id", (req, res, next) => {
   Note.deleteOne({ _id: req.params.id })
     .then((deletedNote) => {
       console.log(deletedNote);
-      response.status(204).end();
+      res.status(204).end();
     })
     .catch((error) => next(error));
 });
