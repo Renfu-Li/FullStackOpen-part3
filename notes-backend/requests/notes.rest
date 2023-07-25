@@ -1,0 +1,30 @@
+###
+GET http://localhost:3001/api/notes/64bb4028fb4502658c55835
+
+###
+GET http://localhost:3001/api/notes
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+  "content": "test adding new note, again",
+  "important": true
+}
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{}
+
+###
+PUT http://localhost:3001/api/notes/64bb4028fb4502658c558355
+Content-Type: application/json
+
+{
+  "content": "test document replacement using rest client extension",
+  "important": true
+}
+

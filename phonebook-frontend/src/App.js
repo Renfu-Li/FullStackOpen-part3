@@ -66,8 +66,6 @@ const Notification = ({ message, style }) => {
   if (message === null) {
     return null;
   } else {
-    console.log(message);
-
     return <div style={style}>{message}</div>;
   }
 };
@@ -79,9 +77,19 @@ const App = () => {
   const [filterCriteria, setFilterCriteria] = useState("");
   const [filteredPersons, setFilteredPersons] = useState([...persons]);
   const [message, setMessage] = useState(null);
+  const [ifError, setIferror] = useState(false);
 
   const notificationStyle = {
     color: "green",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    padding: 10,
+    marginBottom: 10,
+  };
+
+  const errorMessageStyle = {
+    color: "red",
     background: "lightgrey",
     fontSize: 20,
     borderStyle: "solid",
@@ -154,11 +162,14 @@ const App = () => {
             setMessage(`Contact infomation of ${newName} updated`);
             setTimeout(() => setMessage(null), 3000);
           })
-          .catch(() =>
-            setMessage(
-              `Information of ${newName} has already been removed from server`
-            )
-          );
+          .catch((error) => {
+            setIferror(true);
+            setMessage(error.response.data.error);
+            setTimeout(() => {
+              setMessage(null);
+              setIferror(false);
+            }, 3000);
+          });
       } else return;
     } else {
       const newPerson = { name: newName, number: newNumber };
@@ -171,7 +182,14 @@ const App = () => {
           setMessage(`Added ${newName}`);
           setTimeout(() => setMessage(null), 3000);
         })
-        .catch((error) => console.log("Failed adding new person"));
+        .catch((error) => {
+          setIferror(true);
+          setMessage(error.response.data.error);
+          setTimeout(() => {
+            setMessage(null);
+            setIferror(false);
+          }, 5000);
+        });
     }
 
     setNewName("");
@@ -192,20 +210,26 @@ const App = () => {
           );
 
           setMessage(`Deleted ${personToDelete.name}`);
-          setTimeout(() => setMessage(null), 3000);
+          setTimeout(() => setMessage(null), 5000);
         })
-        .catch((error) =>
-          setMessage(
-            `Information of ${personToDelete.name} has already been removed from server`
-          )
-        );
+        .catch((error) => {
+          setIferror(true);
+          setMessage(error.response.data.error);
+          setTimeout(() => {
+            setMessage(null);
+            setIferror(false);
+          }, 5000);
+        });
     }
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} style={notificationStyle}></Notification>
+      <Notification
+        message={message}
+        style={ifError ? errorMessageStyle : notificationStyle}
+      ></Notification>
       <Filter
         filterCriteria={filterCriteria}
         handleFilter={handleFilter}

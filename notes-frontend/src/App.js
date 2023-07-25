@@ -11,6 +11,7 @@ const App = () => {
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
       setNotes(initialNotes);
+      console.log(initialNotes);
     });
   }, []);
 
@@ -23,6 +24,7 @@ const App = () => {
 
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote));
+      console.log(returnedNote);
       setNewNote("");
     });
   };
@@ -34,15 +36,19 @@ const App = () => {
   const toggleImportanceOf = (id) => {
     const note = notes.find((n) => n.id === id);
     const changedNote = { ...note, important: !note.important };
+    console.log(note);
+    console.log(changedNote);
 
     noteService
       .update(id, changedNote)
       .then((returnedNote) => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
+        console.log(changedNote);
       })
       .catch((error) => {
         alert(`the note '${note.content}' was already deleted from server`);
-        setNotes(notes.filter((n) => n.id !== id));
+        setNotes(notes.filter((note) => note.id !== id));
+        console.log(error.message);
       });
   };
 
