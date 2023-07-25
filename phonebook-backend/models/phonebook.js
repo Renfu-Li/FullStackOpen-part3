@@ -9,7 +9,7 @@ mongoose.set("strictQuery", false);
 
 mongoose
   .connect(url)
-  .then((result) => console.log("Successfully connected to MongoDB"))
+  .then(() => console.log("Successfully connected to MongoDB"))
   .catch((error) => console.log("error connecting to MongoDB", error.message));
 
 const peronSchema = new mongoose.Schema({
